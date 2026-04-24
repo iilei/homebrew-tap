@@ -1,0 +1,74 @@
+name: Update Formula
+
+on:
+  repository_dispatch:
+    types: [formula-update]
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Update gitsnitch formula
+        env:
+          VERSION: ${{ github.event.client_payload.version }}
+          SHA256_MACOS_UNIVERSAL2: ${{ github.event.client_payload.sha256_macos_universal2 }}
+          SHA256_LINUX_X86_64: ${{ github.event.client_payload.sha256_linux_x86_64 }}
+          SHA256_LINUX_ARM64: ${{ github.event.client_payload.sha256_linux_arm64 }}
+          SHA256_LINUX_ARMV7: ${{ github.event.client_payload.sha256_linux_armv7 }}
+        run: |
+          FORMULA="Formula/gitsnitch.rb"
+
+          # Update version
+          sed -i "s/version \"[^\"]*\"/version \"${VERSION}\"/" "$FORMULA"
+
+          # Update macOS universal2 sha256
+          # The macOS sha256 is the first sha256 line in the file
+          awk -v new_sha="${SHA256_MACOS_UNIVERSAL2}" \
+            '/on_macos do/{found_macos=1} found_macos && /sha256 "/{sub(/sha256 "[^"]*"/, "sha256 \""new_sha"\""); found_macos=0} {print}' \
+            "$FORMULA" > "$FORMULA.tmp" && mv "$FORMULA.tmp" "$FORMULA"
+
+          # Update Linux x86_64 sha256
+          awk -v new_sha="${SHA256_LINUX_X86_64}" \
+            '/on_intel do/{found=1} found && /sha256 "/{sub(/sha256 "[^"]*"/, "sha256 \""new_sha"\""); found=0} {print}' \
+            "$FORMULA" > "$FORMULA.tmp" && mv "$FORMULA.tmp" "$FORMULA"
+
+          # Update Linux arm64 sha256 (appears before armv7 in the on_arm block)
+          python3 - <<'PYEOF'
+          import re, os
+
+          formula_path = os.environ["FORMULA"] if "FORMULA" in os.environ else "Formula/gitsnitch.rb"
+          sha_arm64 = os.environ["SHA256_LINUX_ARM64"]
+          sha_armv7 = os.environ["SHA256_LINUX_ARMV7"]
+
+          with open("Formula/gitsnitch.rb") as f:
+              content = f.read()
+
+          # Replace arm64 sha256 (inside the else block of on_arm)
+          content = re.sub(
+              r'(gitsnitch-Linux-musl-arm64\.tar\.gz"\n\s+sha256 ")[^"]+(")',
+              r'\g<1>' + sha_arm64 + r'\g<2>',
+              content,
+          )
+          # Replace armv7 sha256
+          content = re.sub(
+              r'(gitsnitch-Linux-musleabihf-armv7\.tar\.gz"\n\s+sha256 ")[^"]+(")',
+              r'\g<1>' + sha_armv7 + r'\g<2>',
+              content,
+          )
+
+          with open("Formula/gitsnitch.rb", "w") as f:
+              f.write(content)
+          PYEOF
+
+      - name: Commit and push
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add Formula/gitsnitch.rb
+          git commit -m "chore: update gitsnitch to v${{ github.event.client_payload.version }}"
+          git push
