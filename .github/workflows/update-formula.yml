@@ -21,6 +21,13 @@ jobs:
           SHA256_LINUX_ARM64: ${{ github.event.client_payload.sha256_linux_arm64 }}
           SHA256_LINUX_ARMV7: ${{ github.event.client_payload.sha256_linux_armv7 }}
         run: |
+          VERSION="${VERSION:?VERSION is required}"
+          SHA256_MACOS_UNIVERSAL2="${SHA256_MACOS_UNIVERSAL2:?SHA256_MACOS_UNIVERSAL2 is required}"
+          SHA256_LINUX_X86_64="${SHA256_LINUX_X86_64:?SHA256_LINUX_X86_64 is required}"
+          SHA256_LINUX_ARM64="${SHA256_LINUX_ARM64:?SHA256_LINUX_ARM64 is required}"
+          SHA256_LINUX_ARMV7="${SHA256_LINUX_ARMV7:?SHA256_LINUX_ARMV7 is required}"
+
+          VERSION="${VERSION#v}"
           FORMULA="Formula/gitsnitch.rb"
 
           # Update version
@@ -37,24 +44,21 @@ jobs:
             '/on_intel do/{found=1} found && /sha256 "/{sub(/sha256 "[^"]*"/, "sha256 \""new_sha"\""); found=0} {print}' \
             "$FORMULA" > "$FORMULA.tmp" && mv "$FORMULA.tmp" "$FORMULA"
 
-          # Update Linux arm64 sha256 (appears before armv7 in the on_arm block)
+          # Update Linux arm64 + armv7 sha256
           python3 - <<'PYEOF'
           import re, os
 
-          formula_path = os.environ["FORMULA"] if "FORMULA" in os.environ else "Formula/gitsnitch.rb"
           sha_arm64 = os.environ["SHA256_LINUX_ARM64"]
           sha_armv7 = os.environ["SHA256_LINUX_ARMV7"]
 
           with open("Formula/gitsnitch.rb") as f:
               content = f.read()
 
-          # Replace arm64 sha256 (inside the else block of on_arm)
           content = re.sub(
               r'(gitsnitch-Linux-musl-arm64\.tar\.gz"\n\s+sha256 ")[^"]+(")',
               r'\g<1>' + sha_arm64 + r'\g<2>',
               content,
           )
-          # Replace armv7 sha256
           content = re.sub(
               r'(gitsnitch-Linux-musleabihf-armv7\.tar\.gz"\n\s+sha256 ")[^"]+(")',
               r'\g<1>' + sha_armv7 + r'\g<2>',
@@ -65,10 +69,28 @@ jobs:
               f.write(content)
           PYEOF
 
-      - name: Commit and push
+      - name: Create versioned formula
+        env:
+          VERSION: ${{ github.event.client_payload.version }}
         run: |
+          VERSION="${VERSION#v}"
+          FORMULA="Formula/gitsnitch.rb"
+          VERSIONED_FORMULA="Formula/gitsnitch@${VERSION}.rb"
+
+          # Homebrew convention: class GitsnitchAT030 for gitsnitch@0.3.0
+          VERSION_NODOTS="${VERSION//./}"
+          CLASS_NAME="GitsnitchAT${VERSION_NODOTS}"
+
+          cp "$FORMULA" "$VERSIONED_FORMULA"
+          sed -i "s/^class Gitsnitch < Formula$/class ${CLASS_NAME} < Formula/" "$VERSIONED_FORMULA"
+
+      - name: Commit and push
+        env:
+          VERSION: ${{ github.event.client_payload.version }}
+        run: |
+          VERSION="${VERSION#v}"
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add Formula/gitsnitch.rb
-          git commit -m "chore: update gitsnitch to v${{ github.event.client_payload.version }}"
+          git add Formula/gitsnitch.rb Formula/gitsnitch@*.rb
+          git commit -m "chore: update gitsnitch to v${VERSION}"
           git push
