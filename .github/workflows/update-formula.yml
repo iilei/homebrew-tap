@@ -13,22 +13,43 @@ jobs:
     steps:
       - uses: actions/checkout@v6
 
-      - name: Update gitsnitch formula
+      - name: Resolve formula target
+        env:
+          PAYLOAD_REPOSITORY: ${{ github.event.client_payload.repository }}
+        run: |
+          SOURCE_REPO="${PAYLOAD_REPOSITORY}"
+          SOURCE_REPO="${SOURCE_REPO:?client_payload.repository (or repo/source_repo) is required}"
+
+          FORMULA_NAME="${SOURCE_REPO##*/}"
+          FORMULA="Formula/${FORMULA_NAME}.rb"
+
+          [[ -f "$FORMULA" ]] || {
+            echo "Expected formula file not found: $FORMULA"
+            exit 1
+          }
+
+          echo "FORMULA_NAME=${FORMULA_NAME}" >> "$GITHUB_ENV"
+          echo "FORMULA_PATH=${FORMULA}" >> "$GITHUB_ENV"
+
+      - name: Update formula
         env:
           VERSION: ${{ github.event.client_payload.version }}
           SHA256_MACOS_UNIVERSAL2: ${{ github.event.client_payload.sha256_macos_universal2 }}
           SHA256_LINUX_X86_64: ${{ github.event.client_payload.sha256_linux_x86_64 }}
           SHA256_LINUX_ARM64: ${{ github.event.client_payload.sha256_linux_arm64 }}
           SHA256_LINUX_ARMV7: ${{ github.event.client_payload.sha256_linux_armv7 }}
+          FORMULA_NAME: ${{ env.FORMULA_NAME }}
+          FORMULA_PATH: ${{ env.FORMULA_PATH }}
         run: |
           VERSION="${VERSION:?VERSION is required}"
           SHA256_MACOS_UNIVERSAL2="${SHA256_MACOS_UNIVERSAL2:?SHA256_MACOS_UNIVERSAL2 is required}"
           SHA256_LINUX_X86_64="${SHA256_LINUX_X86_64:?SHA256_LINUX_X86_64 is required}"
           SHA256_LINUX_ARM64="${SHA256_LINUX_ARM64:?SHA256_LINUX_ARM64 is required}"
           SHA256_LINUX_ARMV7="${SHA256_LINUX_ARMV7:?SHA256_LINUX_ARMV7 is required}"
+          FORMULA_NAME="${FORMULA_NAME:?FORMULA_NAME is required}"
+          FORMULA="${FORMULA_PATH:?FORMULA_PATH is required}"
 
           VERSION="${VERSION#v}"
-          FORMULA="Formula/gitsnitch.rb"
 
           # Update version
           sed -i "s/version \"[^\"]*\"/version \"${VERSION}\"/" "$FORMULA"
@@ -50,47 +71,59 @@ jobs:
 
           sha_arm64 = os.environ["SHA256_LINUX_ARM64"]
           sha_armv7 = os.environ["SHA256_LINUX_ARMV7"]
+          formula_name = os.environ["FORMULA_NAME"]
+          formula_path = os.environ["FORMULA_PATH"]
 
-          with open("Formula/gitsnitch.rb") as f:
+          with open(formula_path) as f:
               content = f.read()
 
           content = re.sub(
-              r'(gitsnitch-Linux-musl-arm64\.tar\.gz"\n\s+sha256 ")[^"]+(")',
+              rf'({re.escape(formula_name)}-Linux-musl-arm64\.tar\.gz"\n\s+sha256 ")[^"]+(")',
               r'\g<1>' + sha_arm64 + r'\g<2>',
               content,
           )
           content = re.sub(
-              r'(gitsnitch-Linux-musleabihf-armv7\.tar\.gz"\n\s+sha256 ")[^"]+(")',
+              rf'({re.escape(formula_name)}-Linux-musleabihf-armv7\.tar\.gz"\n\s+sha256 ")[^"]+(")',
               r'\g<1>' + sha_armv7 + r'\g<2>',
               content,
           )
 
-          with open("Formula/gitsnitch.rb", "w") as f:
+          with open(formula_path, "w") as f:
               f.write(content)
           PYEOF
 
       - name: Create versioned formula
         env:
           VERSION: ${{ github.event.client_payload.version }}
+          FORMULA_NAME: ${{ env.FORMULA_NAME }}
+          FORMULA_PATH: ${{ env.FORMULA_PATH }}
         run: |
           VERSION="${VERSION#v}"
-          FORMULA="Formula/gitsnitch.rb"
-          VERSIONED_FORMULA="Formula/gitsnitch@${VERSION}.rb"
+          FORMULA_NAME="${FORMULA_NAME:?FORMULA_NAME is required}"
+          FORMULA="${FORMULA_PATH:?FORMULA_PATH is required}"
+          VERSIONED_FORMULA="Formula/${FORMULA_NAME}@${VERSION}.rb"
 
-          # Homebrew convention: class GitsnitchAT030 for gitsnitch@0.3.0
+          BASE_CLASS_NAME="$(awk '/^class .* < Formula$/ {print $2; exit}' "$FORMULA")"
+          BASE_CLASS_NAME="${BASE_CLASS_NAME:?Could not determine formula class name}"
+
+          # Homebrew convention: Example AT suffix for versioned formula classes.
           VERSION_NODOTS="${VERSION//./}"
-          CLASS_NAME="GitsnitchAT${VERSION_NODOTS}"
+          CLASS_NAME="${BASE_CLASS_NAME}AT${VERSION_NODOTS}"
 
           cp "$FORMULA" "$VERSIONED_FORMULA"
-          sed -i "s/^class Gitsnitch < Formula$/class ${CLASS_NAME} < Formula/" "$VERSIONED_FORMULA"
+          sed -i "s/^class ${BASE_CLASS_NAME} < Formula$/class ${CLASS_NAME} < Formula/" "$VERSIONED_FORMULA"
 
       - name: Commit and push
         env:
           VERSION: ${{ github.event.client_payload.version }}
+          FORMULA_NAME: ${{ env.FORMULA_NAME }}
+          FORMULA_PATH: ${{ env.FORMULA_PATH }}
         run: |
           VERSION="${VERSION#v}"
+          FORMULA_NAME="${FORMULA_NAME:?FORMULA_NAME is required}"
+          FORMULA="${FORMULA_PATH:?FORMULA_PATH is required}"
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add Formula/gitsnitch.rb Formula/gitsnitch@*.rb
-          git commit -m "chore: update gitsnitch to v${VERSION}"
+          git add "$FORMULA" Formula/"${FORMULA_NAME}"@*.rb
+          git commit -m "chore: update ${FORMULA_NAME} to v${VERSION}"
           git push

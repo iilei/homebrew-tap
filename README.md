@@ -39,6 +39,7 @@ When a new release of a project is published, the release workflow in that repos
 {
   "event_type": "formula-update",
   "client_payload": {
+    "repository": "iilei/gitsnitch",
     "version": "0.3.0",
     "sha256_macos_universal2": "<sha256>",
     "sha256_linux_x86_64": "<sha256>",
