@@ -112,7 +112,12 @@ jobs:
                       env_key = "SHA256_" + target.upper()
                       if env_key in sha_env:
                           new_sha = sha_env[env_key]
-                          line = re.sub(r'''(sha256\s+)(["'])([^"']{6,})(["'])''', r'\1\2' + new_sha + r'\4', line, count=1)
+                          line = re.sub(
+                              r'''(sha256\s+)(["'])([^"']{6,})(["'])''',
+                              lambda m: m.group(1) + m.group(2) + new_sha + m.group(4),
+                              line,
+                              count=1,
+                          )
                   pending_label = None
                   updated_lines.append(line)
                   continue
