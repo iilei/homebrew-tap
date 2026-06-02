@@ -35,6 +35,8 @@ jobs:
         env:
           VERSION: ${{ github.event.client_payload.version }}
           SHA256_MACOS_UNIVERSAL2: ${{ github.event.client_payload.sha256_macos_universal2 }}
+          SHA256_MACOS_ARM64: ${{ github.event.client_payload.sha256_macos_arm64 }}
+          SHA256_MACOS_INTEL: ${{ github.event.client_payload.sha256_macos_intel }}
           SHA256_LINUX_X86_64: ${{ github.event.client_payload.sha256_linux_x86_64 }}
           SHA256_LINUX_ARM64: ${{ github.event.client_payload.sha256_linux_arm64 }}
           SHA256_LINUX_ARMV7: ${{ github.event.client_payload.sha256_linux_armv7 }}
@@ -42,54 +44,89 @@ jobs:
           FORMULA_PATH: ${{ env.FORMULA_PATH }}
         run: |
           VERSION="${VERSION:?VERSION is required}"
-          SHA256_MACOS_UNIVERSAL2="${SHA256_MACOS_UNIVERSAL2:?SHA256_MACOS_UNIVERSAL2 is required}"
-          SHA256_LINUX_X86_64="${SHA256_LINUX_X86_64:?SHA256_LINUX_X86_64 is required}"
-          SHA256_LINUX_ARM64="${SHA256_LINUX_ARM64:?SHA256_LINUX_ARM64 is required}"
-          SHA256_LINUX_ARMV7="${SHA256_LINUX_ARMV7:?SHA256_LINUX_ARMV7 is required}"
           FORMULA_NAME="${FORMULA_NAME:?FORMULA_NAME is required}"
           FORMULA="${FORMULA_PATH:?FORMULA_PATH is required}"
 
           VERSION="${VERSION#v}"
 
-          # Update version
-          sed -i "s/version \"[^\"]*\"/version \"${VERSION}\"/" "$FORMULA"
-
-          # Update macOS universal2 sha256
-          # The macOS sha256 is the first sha256 line in the file
-          awk -v new_sha="${SHA256_MACOS_UNIVERSAL2}" \
-            '/on_macos do/{found_macos=1} found_macos && /sha256 "/{sub(/sha256 "[^"]*"/, "sha256 \""new_sha"\""); found_macos=0} {print}' \
-            "$FORMULA" > "$FORMULA.tmp" && mv "$FORMULA.tmp" "$FORMULA"
-
-          # Update Linux x86_64 sha256
-          awk -v new_sha="${SHA256_LINUX_X86_64}" \
-            '/on_intel do/{found=1} found && /sha256 "/{sub(/sha256 "[^"]*"/, "sha256 \""new_sha"\""); found=0} {print}' \
-            "$FORMULA" > "$FORMULA.tmp" && mv "$FORMULA.tmp" "$FORMULA"
-
-          # Update Linux arm64 + armv7 sha256
+          # Update version and sha256 landing zones
           python3 - <<'PYEOF'
-          import re, os
+          import os
+          import re
 
-          sha_arm64 = os.environ["SHA256_LINUX_ARM64"]
-          sha_armv7 = os.environ["SHA256_LINUX_ARMV7"]
-          formula_name = os.environ["FORMULA_NAME"]
           formula_path = os.environ["FORMULA_PATH"]
+          version = os.environ["VERSION"]
 
-          with open(formula_path) as f:
-              content = f.read()
+          sha_env = {
+              k: v for k, v in os.environ.items()
+              if k.startswith("SHA256_") and v.strip()
+          }
 
-          content = re.sub(
-              rf'({re.escape(formula_name)}-Linux-musl-arm64\.tar\.gz"\n\s+sha256 ")[^"]+(")',
-              r'\g<1>' + sha_arm64 + r'\g<2>',
-              content,
-          )
-          content = re.sub(
-              rf'({re.escape(formula_name)}-Linux-musleabihf-armv7\.tar\.gz"\n\s+sha256 ")[^"]+(")',
-              r'\g<1>' + sha_armv7 + r'\g<2>',
-              content,
-          )
+          patterns = [
+              (re.compile(r"macos[-_]universal2|universal2", re.I), "macos_universal2"),
+              (re.compile(r"darwin[-_](arm64|aarch64)", re.I), "macos_arm64"),
+              (re.compile(r"darwin[-_](amd64|x86_64)|macos[-_](amd64|x86_64)", re.I), "macos_intel"),
+              (re.compile(r"linux[-_](arm64|aarch64)|aarch64.*linux|arm64.*linux", re.I), "linux_arm64"),
+              (re.compile(r"linux[-_](amd64|x86_64)|amd64.*linux|x86_64.*linux", re.I), "linux_x86_64"),
+              (re.compile(r"armv7|eabihf|armhf", re.I), "linux_armv7"),
+          ]
 
-          with open(formula_path, "w") as f:
-              f.write(content)
+          def normalize_label(label):
+              label = re.sub(r"[^a-z0-9]+", "_", label.strip().lower())
+              label = re.sub(r"_+", "_", label).strip("_")
+              return label
+
+          def infer_target(url):
+              if not url:
+                  return None
+              url = url.lower()
+              for regex, target in patterns:
+                  if regex.search(url):
+                      return target
+              return None
+
+          with open(formula_path, "r", encoding="utf-8") as f:
+              lines = f.readlines()
+
+          updated_lines = []
+          last_url = None
+          pending_label = None
+          for line in lines:
+              stripped = line.strip()
+
+              if stripped.startswith("# sha256:"):
+                  pending_label = normalize_label(stripped.split(":", 1)[1])
+                  updated_lines.append(line)
+                  continue
+
+              url_match = re.search(r'''url\s+["']([^"']+)["']''', line)
+              if url_match:
+                  last_url = url_match.group(1)
+                  updated_lines.append(line)
+                  continue
+
+              sha_match = re.search(r'''(sha256\s+)(["'])([^"']{6,})(["'])''', line)
+              if sha_match:
+                  target = pending_label or infer_target(last_url)
+                  if target:
+                      env_key = "SHA256_" + target.upper()
+                      if env_key in sha_env:
+                          new_sha = sha_env[env_key]
+                          line = re.sub(r'''(sha256\s+)(["'])([^"']{6,})(["'])''', r'\1\2' + new_sha + r'\4', line, count=1)
+                  pending_label = None
+                  updated_lines.append(line)
+                  continue
+
+              updated_lines.append(line)
+              pending_label = None
+
+          version_re = re.compile(r'''^(version\s+["'])([^"']+)(["'])''')
+          for idx, line in enumerate(updated_lines):
+              if version_re.match(line):
+                  updated_lines[idx] = version_re.sub(r'\1' + version + r'\3', line, count=1)
+
+          with open(formula_path, "w", encoding="utf-8") as f:
+              f.writelines(updated_lines)
           PYEOF
 
       - name: Create versioned formula
