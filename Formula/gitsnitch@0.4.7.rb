@@ -1,4 +1,4 @@
-class Gitsnitch < Formula
+class GitsnitchAT047 < Formula
   desc "Git commit history linter"
   homepage "https://github.com/iilei/gitsnitch"
   version "0.4.7"
