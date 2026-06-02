@@ -8,13 +8,13 @@ class ProquintAT022 < Formula
     on_arm do
       url "https://github.com/iilei/proquint/releases/download/v#{version}/proquint_#{version}_darwin_universal2.tar.gz"
       # sha256: macos_universal2
-sha256 "1dc3f799df0ac4edf287ab9ab40b30709c95ceab6b253b36a653312705cac1e0"
+      sha256 "1dc3f799df0ac4edf287ab9ab40b30709c95ceab6b253b36a653312705cac1e0"
     end
 
     on_intel do
       url "https://github.com/iilei/proquint/releases/download/v#{version}/proquint_#{version}_darwin_universal2.tar.gz"
       # sha256: macos_universal2
-sha256 "1dc3f799df0ac4edf287ab9ab40b30709c95ceab6b253b36a653312705cac1e0"
+      sha256 "1dc3f799df0ac4edf287ab9ab40b30709c95ceab6b253b36a653312705cac1e0"
     end
   end
 
@@ -22,7 +22,7 @@ sha256 "1dc3f799df0ac4edf287ab9ab40b30709c95ceab6b253b36a653312705cac1e0"
     on_arm do
       url "https://github.com/iilei/proquint/releases/download/v#{version}/proquint_#{version}_linux_arm64.tar.gz"
       # sha256: linux_arm64
-sha256 "d7ddeeffe5371d7cc742670556599cde9a38e58bb6862afae295b0425938fa6a"
+      sha256 "d7ddeeffe5371d7cc742670556599cde9a38e58bb6862afae295b0425938fa6a"
     end
 
     on_intel do

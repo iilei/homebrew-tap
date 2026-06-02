@@ -105,7 +105,7 @@ jobs:
                   updated_lines.append(line)
                   continue
 
-              sha_match = re.search(r'''(sha256\s+)(["'])([^"']{6,})(["'])''', line)
+              sha_match = re.search(r'''(^\s*sha256\s+)(["'])([^"']{6,})(["'])''', line)
               if sha_match:
                   target = pending_label or infer_target(last_url)
                   if target:
