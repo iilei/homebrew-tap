@@ -72,9 +72,9 @@ jobs:
           ]
 
           def normalize_label(label):
-              label = re.sub(r"[^a-z0-9]+", "_", label.strip().lower())
-              label = re.sub(r"_+", "_", label).strip("_")
-              return label
+              label = label.strip().lower()
+              parts = re.findall(r"[a-z0-9]+", label)
+              return "_".join(parts)
 
           def infer_target(url):
               if not url:
