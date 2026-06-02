@@ -55,7 +55,7 @@ jobs:
           import re
 
           formula_path = os.environ["FORMULA_PATH"]
-          version = os.environ["VERSION"]
+          version = os.environ["VERSION"].lstrip("v")
 
           sha_env = {
               k: v for k, v in os.environ.items()
@@ -126,7 +126,7 @@ jobs:
               updated_lines.append(line)
               pending_label = None
 
-          version_re = re.compile(r'''^(version\s+["'])([^"']+)(["'])''')
+          version_re = re.compile(r'''^(\s*version\s+["'])([^"']+)(["'])''')
           for idx, line in enumerate(updated_lines):
               version_match = version_re.match(line)
               if version_match:
