@@ -7,7 +7,7 @@ class Proquint < Formula
   on_macos do
     on_arm do
       url "https://github.com/iilei/proquint/releases/download/v#{version}/proquint_#{version}_darwin_arm64.tar.gz"
-      sha256 "14e10877a078544cd857d0482bfbbe206814280d1ad40e19d7c53fde657d9b467"
+      sha256 "14e10877a078544cd857d0482bfbbe206814280d1ad40e19d7c53fde657d9b46"
     end
 
     on_intel do
@@ -19,12 +19,12 @@ class Proquint < Formula
   on_linux do
     on_arm do
       url "https://github.com/iilei/proquint/releases/download/v#{version}/proquint_#{version}_linux_arm64.tar.gz"
-      sha256 "abec94ec3bb0235fe2b5b2df215a5e65f5a4357b2d1f03f780c1d16566f131ee698"
+      sha256 "abec94ec3bb0235fe2b5b2df215a5e65f5a4357b2d1f03f780c1d16566f131ee"
     end
 
     on_intel do
       url "https://github.com/iilei/proquint/releases/download/v#{version}/proquint_#{version}_linux_amd64.tar.gz"
-      sha256 "1fa29dda39a6e6a124f22e17691dc0ad62f9597071b673cf654f7fd0020eca61750"
+      sha256 "1fa29dda39a6e6a124f22e17691dc0ad62f9597071b673cf654f7fd0020eca61"
     end
   end
 
