@@ -128,7 +128,11 @@ jobs:
           version_re = re.compile(r'''^(version\s+["'])([^"']+)(["'])''')
           for idx, line in enumerate(updated_lines):
               if version_re.match(line):
-                  updated_lines[idx] = version_re.sub(r'\1' + version + r'\3', line, count=1)
+                  updated_lines[idx] = version_re.sub(
+                      lambda m: m.group(1) + version + m.group(3),
+                      line,
+                      count=1,
+                  )
 
           with open(formula_path, "w", encoding="utf-8") as f:
               f.writelines(updated_lines)
