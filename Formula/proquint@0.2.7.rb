@@ -1,4 +1,4 @@
-class Proquint < Formula
+class ProquintAT027 < Formula
   desc "Proquint encode / decode cli"
   homepage "https://github.com/iilei/proquint"
   version "0.2.7"
