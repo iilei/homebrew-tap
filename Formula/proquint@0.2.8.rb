@@ -1,4 +1,4 @@
-class Proquint < Formula
+class ProquintAT028 < Formula
   desc "Proquint encode / decode cli"
   homepage "https://github.com/iilei/proquint"
   version "0.2.8"
@@ -40,3 +40,4 @@ class Proquint < Formula
     assert_match "babab-babop", shell_output("#{bin}/proquint --pad-groups=2 42")
   end
 end
+
