@@ -28,7 +28,7 @@ class Proquint < Formula
     on_intel do
       url "https://github.com/iilei/proquint/releases/download/v#{version}/proquint_#{version}_linux_amd64.tar.gz"
       # sha256: linux_x86_64
-      sha256 "e054974fffb7ef5332cf5685d1a9bca5b912f6aac296ed57014305233df71f84"
+      sha256 "a4fd5d8188dd1e5442381cfe0dea63095b6a3c23fb3280b0890f36ced7da3d52"
     end
   end
 
