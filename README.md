@@ -23,7 +23,7 @@ Think of it as a linter, but for commit hygiene — enforced consistently across
 **Source:** [github.com/iilei/gitsnitch](https://github.com/iilei/gitsnitch)
 
 ```sh
-brew install gitsnitch
+brew install iilei/tap/gitsnitch
 ```
 
 After installation, verify with:
