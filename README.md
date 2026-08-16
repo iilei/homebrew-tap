@@ -52,3 +52,34 @@ After installation, verify with:
 ```sh
 proquint --version
 ```
+
+### nopii
+
+**PII pseudonymization for streams** — deterministic, keyed identifiers that preserve referential relationships.
+
+`nopii` is a pipe-first CLI for replacing personally identifiable information (emails, IPs, UUIDs, phone numbers) with stable pseudonyms. Useful when sharing logs or outputs with LLMs, debugging systems, or external analysis without exposing sensitive data.
+
+**Features:**
+- Deterministic HMAC-SHA256 pseudonyms (same input → same output for consistent scope)
+- Git log integration via `nopii init git` and a structured pretty format
+- Built-in recognizers for email, IPv4, UUID, phone numbers; supports custom patterns
+- No network required — all processing is local
+- Secrets via environment variables or files (never CLI arguments)
+
+**Example:**
+```sh
+export NOPII_KEY="your-secret-key"
+git log --pretty=nopii-v1 | nopii | your-ai-cli
+```
+
+**Source:** [github.com/iilei/nopii](https://github.com/iilei/nopii)
+
+```sh
+brew install iilei/tap/nopii
+```
+
+After installation, verify with:
+
+```sh
+nopii --version
+```
