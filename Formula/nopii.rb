@@ -5,21 +5,21 @@
 class Nopii < Formula
   desc "Pipe-first CLI for deterministic PII pseudonymization"
   homepage "https://github.com/iilei/nopii"
-  version "0.1.1-pre+tap-01"
+  version "0.1.1"
   license "MIT"
 
   on_macos do
     if Hardware::CPU.intel?
-      url "https://github.com/iilei/nopii/releases/download/v0.1.1-pre+tap-01/nopii_Darwin_x86_64.tar.gz"
-      sha256 "705e2ad97d75d104d150e3f592749d8aca097c1bf5ab3c0c513eeb3313d6c883"
+      url "https://github.com/iilei/nopii/releases/download/v0.1.1/nopii_Darwin_x86_64.tar.gz"
+      sha256 "4e8c0134ca7cc6a74663a833328067414c3d45580b0d7df210eee4ae4ca7ab6f"
 
       define_method(:install) do
         bin.install "nopii"
       end
     end
     if Hardware::CPU.arm?
-      url "https://github.com/iilei/nopii/releases/download/v0.1.1-pre+tap-01/nopii_Darwin_arm64.tar.gz"
-      sha256 "0c3b5ee67e1511d9cd524a83ccd5f4c92c6a16c316bbbd68cdf1ac8f9936e901"
+      url "https://github.com/iilei/nopii/releases/download/v0.1.1/nopii_Darwin_arm64.tar.gz"
+      sha256 "897f83e5c7286bb72816bec6546be5dbeefb4235b981f07cf265ee4becab4118"
 
       define_method(:install) do
         bin.install "nopii"
@@ -29,15 +29,15 @@ class Nopii < Formula
 
   on_linux do
     if Hardware::CPU.intel? && Hardware::CPU.is_64_bit?
-      url "https://github.com/iilei/nopii/releases/download/v0.1.1-pre+tap-01/nopii_Linux_x86_64.tar.gz"
-      sha256 "d566c363fb361edc5174643342c1e0cecb071d786e833a22c3af457eb49fbda3"
+      url "https://github.com/iilei/nopii/releases/download/v0.1.1/nopii_Linux_x86_64.tar.gz"
+      sha256 "2c7934d5f5e6db76fb7785e7cd2aa15c96dedaae059e1a8a687126225631ae16"
       define_method(:install) do
         bin.install "nopii"
       end
     end
     if Hardware::CPU.arm? && Hardware::CPU.is_64_bit?
-      url "https://github.com/iilei/nopii/releases/download/v0.1.1-pre+tap-01/nopii_Linux_arm64.tar.gz"
-      sha256 "3dc7932fc718ac565f0cac272b1b081f133bc77c7056a1ed3cb6df568695d700"
+      url "https://github.com/iilei/nopii/releases/download/v0.1.1/nopii_Linux_arm64.tar.gz"
+      sha256 "3a2885e823502705e3cf4f6455cc343d92d02866697168f9762b338e86e1a859"
       define_method(:install) do
         bin.install "nopii"
       end
