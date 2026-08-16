@@ -4,9 +4,20 @@ My projects Homebrew formulae.
 
 ## Usage
 
+This tap contains the following formulae:
+
 ```sh
 brew install iilei/tap/gitsnitch
 brew install iilei/tap/proquint
+brew install iilei/tap/nopii
+```
+
+To confirm each install succeeded:
+
+```sh
+gitsnitch --version
+proquint --version
+nopii --help
 ```
 
 ## Formulae
@@ -57,16 +68,26 @@ proquint --version
 
 **PII pseudonymization for streams** — deterministic, keyed identifiers that preserve referential relationships.
 
-`nopii` is a pipe-first CLI for replacing personally identifiable information (emails, IPs, UUIDs, phone numbers) with stable pseudonyms. Useful when sharing logs or outputs with LLMs, debugging systems, or external analysis without exposing sensitive data.
+`nopii` is a pipe-first CLI for replacing personally identifiable information (emails, IPs, UUIDs, phone numbers) with stable pseudonyms. It is useful when sharing logs, diffs, or other output with LLMs, debugging systems, or external analysis without exposing sensitive data.
 
 **Features:**
-- Deterministic HMAC-SHA256 pseudonyms (same input → same output for consistent scope)
-- Git log integration via `nopii init git` and a structured pretty format
-- Built-in recognizers for email, IPv4, UUID, phone numbers; supports custom patterns
-- No network required — all processing is local
-- Secrets via environment variables or files (never CLI arguments)
 
-**Example:**
+- Deterministic HMAC-SHA256 pseudonyms (same input → same output within a given key scope)
+- Git log integration via `nopii init git` and a structured pretty format
+- Built-in recognizers for emails, IPv4 addresses, UUIDs, and phone numbers; supports custom patterns
+- Zero network access — all processing is local
+- Secrets can be supplied via environment variables or files, rather than CLI arguments
+
+**Quick start:**
+
+```sh
+export NOPII_KEY="$(openssl rand -hex 32)"
+
+echo 'alice@example.com, +1 (555) 123-4567' | nopii
+```
+
+**Git workflow example:**
+
 ```sh
 export NOPII_KEY="your-secret-key"
 git log --pretty=nopii-v1 | nopii | your-ai-cli
@@ -81,5 +102,5 @@ brew install iilei/tap/nopii
 After installation, verify with:
 
 ```sh
-nopii --version
+nopii --help
 ```
