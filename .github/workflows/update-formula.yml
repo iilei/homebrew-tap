@@ -63,12 +63,12 @@ jobs:
           }
 
           patterns = [
-              (re.compile(r"macos[-_]universal2|universal2", re.I), "macos_universal2"),
-              (re.compile(r"darwin[-_](arm64|aarch64)", re.I), "macos_arm64"),
-              (re.compile(r"darwin[-_](amd64|x86_64)|macos[-_](amd64|x86_64)", re.I), "macos_intel"),
-              (re.compile(r"linux[-_](arm64|aarch64)|aarch64.*linux|arm64.*linux", re.I), "linux_arm64"),
-              (re.compile(r"linux[-_](amd64|x86_64)|amd64.*linux|x86_64.*linux", re.I), "linux_x86_64"),
-              (re.compile(r"armv7|eabihf|armhf", re.I), "linux_armv7"),
+              (re.compile(r"darwin[-_]universal2|macos[-_]universal2|universal2", re.I), "MACOS_UNIVERSAL2"),
+              (re.compile(r"darwin[-_](arm64|aarch64)", re.I), "MACOS_ARM64"),
+              (re.compile(r"darwin[-_](amd64|x86_64)|macos[-_](amd64|x86_64)", re.I), "MACOS_INTEL"),
+              (re.compile(r"linux[-_](amd64|x86_64)|amd64.*linux|x86_64.*linux", re.I), "LINUX_X86_64"),
+              (re.compile(r"linux[-_](arm64|aarch64)|aarch64.*linux|arm64.*linux", re.I), "LINUX_ARM64"),
+              (re.compile(r"linux[-_]armv7|armv7.*linux|eabihf|armhf", re.I), "LINUX_ARMV7"),
           ]
 
           def normalize_label(label):
