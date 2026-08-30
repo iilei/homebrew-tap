@@ -1,4 +1,4 @@
-class LaneKeeper < Formula
+class LaneKeeperAT000-pre02 < Formula
   desc "Repository readiness checks and read-only workflow helpers"
   homepage "https://github.com/iilei/lane-keeper"
   license "MIT"
