@@ -10,6 +10,7 @@ This tap contains the following formulae:
 brew install iilei/tap/gitsnitch
 brew install iilei/tap/proquint
 brew install iilei/tap/nopii
+brew install iilei/tap/lane-keeper
 ```
 
 To confirm each install succeeded:
@@ -18,6 +19,7 @@ To confirm each install succeeded:
 gitsnitch --version
 proquint --version
 nopii --help
+lane-keeper version
 ```
 
 ## Formulae
@@ -103,4 +105,22 @@ After installation, verify with:
 
 ```sh
 nopii --help
+```
+
+### lane-keeper
+
+**Repository readiness checks and read-only workflow helpers** for consistent local development and GitLab CI workflows.
+
+Lane-Keeper is currently unreleased. This formula builds the latest `master` branch and installs both `lane-keeper` and the `git-keep-lane` forwarding executable.
+
+**Source:** [github.com/iilei/lane-keeper](https://github.com/iilei/lane-keeper)
+
+```sh
+brew install iilei/tap/lane-keeper
+```
+
+After installation, verify with:
+
+```sh
+lane-keeper version
 ```
