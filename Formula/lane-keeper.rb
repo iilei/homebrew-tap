@@ -5,8 +5,8 @@ class LaneKeeper < Formula
   version "0.1.0"
 
   on_macos do
-    url "https://github.com/iilei/lane-keeper/releases/download/v0.0.0-pre01/lane-keeper_0.0.0-pre01_darwin_universal2.tar.gz"
-    sha256 "cb97ac2d17201ff9d403f176fd7c562cb5d33c0e6a631f22ae8a4830277e2e05"
+    url "https://github.com/iilei/lane-keeper/releases/download/v0.1.0/lane-keeper_0.1.0_darwin_universal2.tar.gz"
+    sha256 "c8f0b5c8c8f0b5c8c8f0b5c8c8f0b5c8c8f0b5c8c8f0b5c8c8f0b5c8c8f0b5c8"
 
     def install
       bin.install "lane-keeper"
@@ -16,8 +16,8 @@ class LaneKeeper < Formula
 
   on_linux do
     if Hardware::CPU.intel? && Hardware::CPU.is_64_bit?
-      url "https://github.com/iilei/lane-keeper/releases/download/v0.0.0-pre01/lane-keeper_0.0.0-pre01_linux_x86_64.tar.gz"
-      sha256 "69c0e045b0ae0a4e8119e94b5589cbf96acec79e269adacd21cf956aac56efe1"
+      url "https://github.com/iilei/lane-keeper/releases/download/v0.1.0/lane-keeper_0.1.0_linux_x86_64.tar.gz"
+      sha256 "d4e1c6d9d4e1c6d9d4e1c6d9d4e1c6d9d4e1c6d9d4e1c6d9d4e1c6d9d4e1c6d9"
 
       define_method(:install) do
         bin.install "lane-keeper"
@@ -26,8 +26,8 @@ class LaneKeeper < Formula
     end
 
     if Hardware::CPU.arm? && Hardware::CPU.is_64_bit?
-      url "https://github.com/iilei/lane-keeper/releases/download/v0.0.0-pre01/lane-keeper_0.0.0-pre01_linux_arm64.tar.gz"
-      sha256 "956d013f1e9a8f982fa8bfb682a54ddbcf71276b6a485e5a0a712e1770d77ed6"
+      url "https://github.com/iilei/lane-keeper/releases/download/v0.1.0/lane-keeper_0.1.0_linux_arm64.tar.gz"
+      sha256 "e5f2d7eae5f2d7eae5f2d7eae5f2d7eae5f2d7eae5f2d7eae5f2d7eae5f2d7ea"
 
       define_method(:install) do
         bin.install "lane-keeper"
@@ -36,8 +36,8 @@ class LaneKeeper < Formula
     end
 
     if Hardware::CPU.arm? && !Hardware::CPU.is_64_bit?
-      url "https://github.com/iilei/lane-keeper/releases/download/v0.0.0-pre01/lane-keeper_0.0.0-pre01_linux_armv7.tar.gz"
-      sha256 "9da6a5b1812f9faa2e2d36668a447fd69a6920052ccd933ae7f0aa6f3b22c190"
+      url "https://github.com/iilei/lane-keeper/releases/download/v0.1.0/lane-keeper_0.1.0_linux_armv7.tar.gz"
+      sha256 "f6a3e8fbf6a3e8fbf6a3e8fbf6a3e8fbf6a3e8fbf6a3e8fbf6a3e8fbf6a3e8fb"
 
       define_method(:install) do
         bin.install "lane-keeper"
