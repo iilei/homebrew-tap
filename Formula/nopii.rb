@@ -5,21 +5,21 @@
 class Nopii < Formula
   desc "Pipe-first CLI for deterministic PII pseudonymization"
   homepage "https://github.com/iilei/nopii"
-  version "0.1.1"
+  version "0.2.0"
   license "MIT"
 
   on_macos do
     if Hardware::CPU.intel?
-      url "https://github.com/iilei/nopii/releases/download/v0.1.1/nopii_Darwin_x86_64.tar.gz"
-      sha256 "4e8c0134ca7cc6a74663a833328067414c3d45580b0d7df210eee4ae4ca7ab6f"
+      url "https://github.com/iilei/nopii/releases/download/v0.2.0/nopii_Darwin_x86_64.tar.gz"
+      sha256 "334db2f074017888833f2aea63684a45efae61880f4fd58bda93fe18e5a81998"
 
       define_method(:install) do
         bin.install "nopii"
       end
     end
     if Hardware::CPU.arm?
-      url "https://github.com/iilei/nopii/releases/download/v0.1.1/nopii_Darwin_arm64.tar.gz"
-      sha256 "897f83e5c7286bb72816bec6546be5dbeefb4235b981f07cf265ee4becab4118"
+      url "https://github.com/iilei/nopii/releases/download/v0.2.0/nopii_Darwin_arm64.tar.gz"
+      sha256 "f76a282ec282579483085f96ab60532f56182e4c94dc4e383522aa305e4f10cf"
 
       define_method(:install) do
         bin.install "nopii"
@@ -29,15 +29,15 @@ class Nopii < Formula
 
   on_linux do
     if Hardware::CPU.intel? && Hardware::CPU.is_64_bit?
-      url "https://github.com/iilei/nopii/releases/download/v0.1.1/nopii_Linux_x86_64.tar.gz"
-      sha256 "2c7934d5f5e6db76fb7785e7cd2aa15c96dedaae059e1a8a687126225631ae16"
+      url "https://github.com/iilei/nopii/releases/download/v0.2.0/nopii_Linux_x86_64.tar.gz"
+      sha256 "c4723680dbccd081ac4e2a25a09c6d54543c5245379938fcc6f87bcb4b3c6378"
       define_method(:install) do
         bin.install "nopii"
       end
     end
     if Hardware::CPU.arm? && Hardware::CPU.is_64_bit?
-      url "https://github.com/iilei/nopii/releases/download/v0.1.1/nopii_Linux_arm64.tar.gz"
-      sha256 "3a2885e823502705e3cf4f6455cc343d92d02866697168f9762b338e86e1a859"
+      url "https://github.com/iilei/nopii/releases/download/v0.2.0/nopii_Linux_arm64.tar.gz"
+      sha256 "b23a43ca2316d98ff8a3513fa62f9a1e25a7294e698a9d3e41ec9c11a83fc5db"
       define_method(:install) do
         bin.install "nopii"
       end
