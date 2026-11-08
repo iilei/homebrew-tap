@@ -1,20 +1,20 @@
 class Proquint < Formula
   desc "Proquint encode / decode cli"
   homepage "https://github.com/iilei/proquint"
-  version "0.2.8"
+  version "0.2.9"
   license "MIT"
 
   on_macos do
     on_arm do
       url "https://github.com/iilei/proquint/releases/download/v#{version}/proquint_#{version}_darwin_universal2.tar.gz"
       # sha256: macos_universal2
-      sha256 "4c0e22f297647c6688c34bceb0e2737a4410b94f59b56ad5e0489dc5b44bc10f"
+      sha256 "d69855075fee3269f2f128017254968414623ae481443af75a9d4c9fe767a19f"
     end
 
     on_intel do
       url "https://github.com/iilei/proquint/releases/download/v#{version}/proquint_#{version}_darwin_universal2.tar.gz"
       # sha256: macos_universal2
-      sha256 "4c0e22f297647c6688c34bceb0e2737a4410b94f59b56ad5e0489dc5b44bc10f"
+      sha256 "d69855075fee3269f2f128017254968414623ae481443af75a9d4c9fe767a19f"
     end
   end
 
@@ -22,13 +22,13 @@ class Proquint < Formula
     on_arm do
       url "https://github.com/iilei/proquint/releases/download/v#{version}/proquint_#{version}_linux_arm64.tar.gz"
       # sha256: linux_arm64
-      sha256 "6c7db5bb939a17443f1c83cefbfc56dae85dcdbf9807a7ffd454fb3d37af04b9"
+      sha256 "2b3918faf0749f606fbec83b89ea228b33fbd0a8ac188ec66931241c1e5ce0b8"
     end
 
     on_intel do
       url "https://github.com/iilei/proquint/releases/download/v#{version}/proquint_#{version}_linux_x86_64.tar.gz"
       # sha256: linux_x86_64
-      sha256 "0fbf0bb16ae82b41eeee5de79ca4b989d595c274df36a3b0cb111a655da4023c"
+      sha256 "8689e6378fb5567f6933fe83a81a16158aef27a14be86bf999b6d9a042ab5233"
     end
   end
 
